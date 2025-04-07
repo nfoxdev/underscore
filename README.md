@@ -1,19 +1,23 @@
   
 # "underscore" \_()
 
-Construct &amp; Model complex Visual Foxpro Objects*  adding properties, arrays and collections the easy way.
+Create complex Visual Foxpro Objects  adding properties, arrays and collections the easy way.
 
-Just make \_.prg available in your search path and start using it. Check and run \_test.prg.
+Just make \_.prg available in your search path and start using it. 
+
+see test_.prg for usage and quick start.
 
 Usage:
 
-	with _( object , [ cNewPropertyName ] ) 
+	with _( object [, cNewPropertyName ] ) 
 
   		.property1 = any valid vfp expression
 
 		.property2 = any valid vfp expression
 	
 		with _( .<newObjectPropertyName> [,cNewpropertyName] )
+
+  			.property = any valid vfp expression
 	
 		endwith
 
