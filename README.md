@@ -1,7 +1,7 @@
   
 # "underscore" \_()
 
-Create complex Visual Foxpro Objects  adding properties, arrays and collections the easy way.
+Create Visual Foxpro Objects  adding properties, arrays and collections the easy way.
 
 Just make \_.prg available in your search path and start using it. 
 
@@ -36,6 +36,9 @@ Usage:
 		 endwith
 
  	endwith
+
+![](test.jpg) 
+
 
 2025, Marco Plaza  
 [GitHub/nfoxdev](https://github.com/nfoxdev)
