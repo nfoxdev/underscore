@@ -5,7 +5,14 @@ Create Visual Foxpro Objects  adding properties, arrays and collections the easy
 
 Just make \_.prg available in your search path and start using it. 
 
-see test_.prg for usage and quick start.
+see test_.prg for usage and quick start:
+
+![](test0.jpg) 
+
+oMypc:
+
+![](test.jpg) 
+
 
 Usage:
 
@@ -36,9 +43,5 @@ Usage:
 		 endwith
 
  	endwith
-
-![](test.jpg) 
-
-
 2025, Marco Plaza  
 [GitHub/nfoxdev](https://github.com/nfoxdev)
