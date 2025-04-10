@@ -1,17 +1,18 @@
 
 Public omypc && check later on your debugger
 
-omypc = Createobject('empty')
+oMypc = Createobject('empty')
 
-With _( omypc )  && simply pass object you want to modify, any referenced property will be added to passed object if does not exist:
+* add properties to oMypc:
 
-	.madeby = 'Marco Plaza, 2018 - nfTools'
+With _( m.omypc )  
+
 	.manufacturer = 'custom'
 	.baseprice = 699
 	.casetype  = 'ATX'
 	.modelname = 'Ryzen Performance Plus'
 
-	With _( .cpu )   && cpu will be a new object for oMyPc - check we pass ".cpu"  ( dot cpu ) because it's inside with - endwith
+	With _( .cpu )   && a new object for oMyPc -  we pass ".cpu"  ( dot cpu )
 		.processorcount = 6
 		.brand = 'AMD'
 		.model = 'Ryzen 7'
@@ -26,10 +27,15 @@ With _( omypc )  && simply pass object you want to modify, any referenced proper
 		.formfactor = 'ATX'
 		.cpusocket = 'AM4'
 
-		.power = .newList('CPU','CASE1','CASE2','CASE3')  && creating a list with 4 items
+		* create a list ( one-column array ) with 4 items:
+		.power = .newList('CPU','CASE1','CASE2','CASE3')  
 
+		* create a collection:
 		.SPECS = .newCollection()
-		
+
+
+		* add items to collection , with key "memory" and "usb":
+
 		with .newItemFor('specs','memory')
 			.type = 'DDR4'
 			.MAXSIZE = '64GB'
@@ -44,6 +50,8 @@ With _( omypc )  && simply pass object you want to modify, any referenced proper
 		
 
 	Endwith
+
+	* add a list of objects:
 
 	.storage = .newList()
 	
