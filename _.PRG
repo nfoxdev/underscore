@@ -11,77 +11,72 @@
 *
 * with _( object , [ cNewPropertyName ] )
 *
-*	.property1 = any valid vfp expression
+*   .property1 = any valid vfp expression
 *
-*	.property2 = any valid vfp expression
+*   .property2 = any valid vfp expression
 *
-*	with _( .<newObjectPropertyName> [,cNewpropertyName] )
+*   with _( .<newObjectPropertyName> [,cNewpropertyName] )
 *
-*	endwith
+*   endwith
 *
-*	 .myCollection = .newCollection( [Item1,Item2,... Item20 ]) 
+*    .myCollection = .newCollection( [Item1,Item2,... Item20 ])
 *
-*	 .myList = .newList( [ Item1,Item2,... Item20 ] )
+*    .myList = .newList( [ Item1,Item2,... Item20 ] )
 *
-*	 .additems( "< collection/array name >" , item1,item2,.. item20 )
+*    .additems( "< collection/array name >" , item1,item2,.. item20 )
 *
-*	 with .newItemFor("< collection/array name >" [, collectionItemkey] )
+*    with .newItemFor("< collection/array name >" [, collectionItemkey] )
 *
-*		.itemproperty1 = value
+*      .itemproperty1 = value
 *
-*		.itemproperty2 = value 
+*      .itemproperty2 = value
 *
-*	 endwith
+*    endwith
 *
 * endwith
 *
 *
 **************************************************************
 
-Parameters __otarget__, newpropname
+Lparameters __otarget__, newpropname
 
-Private All
+
+Local result,tact,oerror
+
 
 Try
 
-	emessage = ''
+  Do Case
 
-	Do Case
+  Case Vartype(__otarget__) # 'O'
+    Error 'nfTools: Invalid parameter type - must supply an object '+Chr(13)
 
-	Case Vartype(__otarget__) # 'O'
-		Error 'nfTools: Invalid parameter type - must supply an object '+Chr(13)
-		result = .Null.
+  Case Pcount() = 2 And Vartype(m.newpropname ) = 'C'
 
+    tact = Type( '__oTarget__.'+newpropname )
 
-	Case Pcount() = 2 And Vartype(m.newpropname ) = 'C'
+    Do Case
+    Case m.tact = 'U'
+      AddProperty( m.__otarget__ , m.newpropname, Createobject('empty') )
+    Case m.tact # 'O'
+      __otarget__.&newpropname = Createobject('empty')
+    Endcase
 
-		tact = Type( '__oTarget__.'+newpropname )
+    result = Createobject('nfset',__otarget__.&newpropname)
 
-		Do Case
-		Case m.tact = 'U'
-			AddProperty( __otarget__ , newpropname, Createobject('empty') )
-		Case m.tact # 'O'
-			__otarget__.&newpropname = Createobject('empty')
-		Endcase
+  Otherwise
 
-		result = Createobject('nfset',__otarget__.&newpropname)
+    result = Createobject('nfset',m.__otarget__)
 
-	Otherwise
+  Endcase
 
-		result = Createobject('nfset',m.__otarget__)
-
-	Endcase
-
-Catch To oerr
-
-	emessage = emessage( oerr)
-
+Catch To oerror
+  result = .Null.
 
 Endtry
 
-If !Empty(m.emessage)
-	Error m.emessage
-	Return .Null.
+If Vartype(m.oerror) = 'O'
+  Error oerror.Message
 Endif
 
 
@@ -92,171 +87,181 @@ Return m.result
 ******************************************
 Define Class nfset As Custom
 ******************************************
-__otarget__ = .F.
-__lastproperty__ = ''
-__passitems__ = .F.
+  __otarget__ = .F.
+  __lastproperty__ = ''
+  __passitems__ = .F.
 
 *----------------------------------------
-Procedure Init( __otarget__ )
+  Protected Procedure Init( __otarget__ )
 *----------------------------------------
-	This.__otarget__ = m.__otarget__
-	AddProperty(This,'__acache__(1)')
+    This.__otarget__ = m.__otarget__
+    AddProperty(This,'__acache__(1)')
 
 *---------------------------------------------
-Procedure this_access( pname As String )
+  Protected Procedure this_access( pname As String )
 *---------------------------------------------
 
-	If Lower(m.pname) $  '__apush__,__otarget__,__lastproperty__,newitemfor,newlist,newcollection,additems,__acache__,__passitems__,__copycache__'
-		Return This
-	Endif
+    If Lower(m.pname) $  '__apush__,__otarget__,__lastproperty__,newitemfor,newlist,newcollection,additems,__acache__,__passitems__,__copycache__'
+      Return This
+    Endif
 
-	This.__copycache__()
+    This.__copycache__()
 
-	This.__lastproperty__ = m.pname
+    This.__lastproperty__ = m.pname
 
-	If !Pemstatus(This.__otarget__,m.pname,5)
+    If !Pemstatus(This.__otarget__,m.pname,5)
 
-		AddProperty(This.__otarget__,m.pname, Createobject('empty') )
+      AddProperty(This.__otarget__,m.pname, Createobject('empty') )
 
-	Endif
+    Endif
 
-	Return This.__otarget__
+    Return This.__otarget__
+
+*----------------------------------------------------------------------------------------------------
+  Function additems( pname, p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16,p17,p18,p19,p20 )
+*----------------------------------------------------------------------------------------------------
+
+  Local ot,isarray,nn
+
+  If Not Type( 'this.__oTarget__.'+m.pname,1) $ 'C,A'
+    Error  pname + ' is not a Collection / Array '
+  Endif
+
+  isarray = Type( 'this.__oTarget__.'+m.pname,1) = 'A'
+
+  ot = This.__otarget__
+
+  For nn = 1 To Pcount()-1
+
+    If m.isarray
+      This.__apush__( m.ot,m.pname, Evaluate('m.p'+Transform(m.nn)) )
+    Else
+      m.ot.&pname..Add( Evaluate('m.p'+Transform(m.nn)) )
+    Endif
+
+  Endfor
+
 
 *---------------------------------------
-Function additems( pname, p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16,p17,p18,p19,p20 )
+  Function newitemfor( pname , Key )
 *---------------------------------------
 
-	If Not Type( 'this.__oTarget__.'+m.pname,1) $ 'C,A'
-		Error  pname + ' is not a Collection / Array '
-	Endif
+  Local ot,tvar,onew
 
-	isarray = Type( 'this.__oTarget__.'+m.pname,1) = 'A'
+  If Type('pName') # 'C'
+    Error ' newItemFor() invalid parameter Type '
+  Endif
 
-	ot = This.__otarget__
+  ot = This.__otarget__
 
-	For nn = 1 To Pcount()-1
+  tvar = Type( 'oT.'+m.pname , 1 )
 
-		If m.isarray
-			this.__apush__( m.ot,m.pname, Evaluate('p'+Transform(m.nn)) )
-		Else
-			m.ot.&pname..Add( Evaluate('p'+Transform(m.nn)) )
-		Endif
+  Do Case
 
-	Endfor
+  Case m.tvar = 'C'
 
+    onew = Create('empty')
 
-*---------------------------------------
-Function newitemfor( pname , Key )
-*---------------------------------------
+    If Pcount() = 2
+      m.ot.&pname..Add( m.onew, m.key  )
+    Else
+      m.ot.&pname..Add( m.onew )
+    Endif
 
-	If Type('pName') # 'C'
-		Error ' newItemFor() invalid parameter Type '+calledfrom()
-	Endif
+    Return Createobject('nfset',m.onew )
 
-	ot = This.__otarget__
+  Case m.tvar = 'A'
 
-	tvar = Type( 'oT.'+m.pname , 1 )
+    onew = Create('empty')
 
-	Do Case
+    This.__apush__( m.ot,m.pname, m.onew )
 
-	Case m.tvar = 'C'
+    Return Createobject('nfset',m.onew)
 
-		onew = create('empty')
-
-		If Pcount() = 2
-			m.ot.&pname..Add( m.onew, m.key  )
-		Else
-			m.ot.&pname..Add( m.onew )
-		Endif
-
-		Return Createobject('nfset',m.onew )
-
-	Case m.tvar = 'A'
-
-		onew = create('empty')
-
-		this.__apush__( m.ot,m.pname, m.onew )
-
-		Return Createobject('nfset',m.onew)
-
-	Otherwise
+  Otherwise
 
 
-		Error pname + ' is not a Collection / Array ' &&+calledfrom()
+    Error m.pname + ' is not a Collection / Array '
 
-	Endcase
+  Endcase
 
 
 *-------------------------------------------------------------------------------------------------------
-	Procedure newlist( p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16,p17,p18,p19,p20 )
+  Procedure newlist( p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16,p17,p18,p19,p20 )
 *-------------------------------------------------------------------------------------------------------
 
-	ot = This.__otarget__
-	lp = This.__lastproperty__
-	Removeproperty(m.ot,m.lp)
-	AddProperty(m.ot,m.lp+'(1)')
+  Local ot,lp,np
 
-	If Pcount() > 0
-		Dimension This.__acache__( Pcount() )
-		For np = 1 To Pcount()
-			This.__acache__(m.np) =  Evaluate('p'+Transform(m.np,'@b 99'))
-		Endfor
-		This.__passitems__ = .T.
-	Else
-		Dimension This.__acache__(1)
-		This.__acache__(1) = .Null.
-		This.__passitems__ = .F.
-	Endif
+  ot = This.__otarget__
+  lp = This.__lastproperty__
+  Removeproperty(m.ot,m.lp)
+  AddProperty(m.ot,m.lp+'(1)')
 
-	Return .Null.
+  If Pcount() > 0
+    Dimension This.__acache__( Pcount() )
+    For np = 1 To Pcount()
+      This.__acache__(m.np) =  Evaluate('m.p'+Transform(m.np,'@b 99'))
+    Endfor
+    This.__passitems__ = .T.
+  Else
+    Dimension This.__acache__(1)
+    This.__acache__(1) = .Null.
+    This.__passitems__ = .F.
+  Endif
+
+  Return .Null.
 
 *-------------------------------
-	Procedure Destroy
+  Procedure Destroy
 *-------------------------------
-	This.__copycache__()
+  This.__copycache__()
 
 
-*------------------------------------------
-	Procedure __copycache__
-*------------------------------------------
-	If !This.__passitems__
-		Return
-	Endif
+*----------------------------------------
+  Protected Procedure __copycache__
+*----------------------------------------
+    Local aname
 
-	This.__passitems__ = .F.
+    If !This.__passitems__
+      Return
+    Endif
 
-	aname = This.__lastproperty__
-	Acopy( This.__acache__,This.__otarget__.&aname )
-	This.__acache__ = .Null.
+    This.__passitems__ = .F.
 
-*--------------------------------------
-	Procedure newcollection(  p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16,p17,p18,p19,p20 )
-*--------------------------------------
+    aname = This.__lastproperty__
+    Acopy( This.__acache__,This.__otarget__.&aname )
+    This.__acache__ = .Null.
 
-	Local ocol
-	ocol = Createobject('collection')
+*---------------------------------------------------------------------------------------------------
+  Procedure newcollection(  p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16,p17,p18,p19,p20 )
+*---------------------------------------------------------------------------------------------------
 
-	For nn = 1 To Pcount()
+  Local ocol,nn
 
-		ocol.Add(  Evaluate('p'+Transform(m.nn,'@b 99') ))
+  ocol = Createobject('collection')
 
-	Endfor
+  For nn = 1 To Pcount()
 
-	Return m.ocol
+    ocol.Add(  Evaluate('m.p'+Transform(m.nn,'@b 99') ))
+
+  Endfor
+
+  Return m.ocol
 
 
 *-----------------------------------------
-Function __apush__( o, pname , vvalue )
+  Function __apush__( o, pname , vvalue )
 *-----------------------------------------
+  Local uel
 
-uel = Alen( m.o.&pname )
+  uel = Alen( m.o.&pname )
 
-If !Isnull( m.o.&pname )
-	m.uel = m.uel+1
-	Dimension m.o.&pname( m.uel )
-Endif
+  If !Isnull( m.o.&pname )
+    m.uel = m.uel+1
+    Dimension m.o.&pname( m.uel )
+  Endif
 
-m.o.&pname( m.uel ) =  m.vvalue
+  m.o.&pname( m.uel ) =  m.vvalue
 
 
 

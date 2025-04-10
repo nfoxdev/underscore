@@ -1,5 +1,5 @@
 
-Public omypc && check later on your debugger
+Public omypc && check later in your debugger
 
 oMypc = Createobject('empty')
 
@@ -12,7 +12,7 @@ With _( m.omypc )
 	.casetype  = 'ATX'
 	.modelname = 'Ryzen Performance Plus'
 
-	With _( .cpu )   && a new object for oMyPc -  we pass ".cpu"  ( dot cpu )
+	With _( .cpu )   && a cpu for oMyPc passing "dot cpu"
 		.processorcount = 6
 		.brand = 'AMD'
 		.model = 'Ryzen 7'
@@ -27,10 +27,7 @@ With _( m.omypc )
 		.formfactor = 'ATX'
 		.cpusocket = 'AM4'
 
-		* create a list ( one-column array ) with 4 items:
-		.power = .newList('CPU','CASE1','CASE2','CASE3')  
-
-		* create a collection:
+		* create a collection, then add items to it:
 		.SPECS = .newCollection()
 
 
@@ -47,11 +44,14 @@ With _( m.omypc )
 			.front = 'x1 Type-C'
 			.rear  = 'x2 Type-A'
 		endwith
+
+      * create a quick list ( one-column array ) with 4 items:
+      .power = .newList('CPU','CASE1','CASE2','CASE3')  
 		
 
 	Endwith
 
-	* add a list of objects:
+	* create an empty list , then add items to it:
 
 	.storage = .newList()
 	
@@ -78,10 +78,10 @@ endwith
 
 clear
 
-? oMypc.motherboard.power[1]
-? oMypc.storage[1].connectivity
-? omypc.motherboard.specs('memory').maxsize
-? omypc.motherboard.specs('memory').slots
-? omypc.motherboard.specs('usb').front
+? 'oMypc.motherboard.power[1]: ',oMypc.motherboard.power[1]
+? 'oMypc.storage[1].model: ',oMypc.storage[1].model
+? 'oMypc.storage[2].model: ',oMypc.storage[2].model
+? 'oMypc.motherboard.specs("memory").slots: ',omypc.motherboard.specs('memory').slots
+? 'oMypc.motherboard.specs("usb").front: ',omypc.motherboard.specs('usb').front
 
 
