@@ -1,9 +1,7 @@
 **************************************************************
-*
-* Marco Plaza, nfoxdev 2018,2025
-*
+* underscore v 1.0.1
+* Marco Plaza, nfoxdev 2018,2025 
 * https://github.com/nfoxdev/underscore
-*
 *************************************************************
 *
 * usage ( see test_.prg )
@@ -95,17 +93,17 @@ Define Class nfset As Custom
   Protected Procedure Init( __otarget__ )
 *----------------------------------------
     This.__otarget__ = m.__otarget__
-    AddProperty(This,'__acache__(1)')
+    AddProperty(This,'__atemp__(1)')
 
 *---------------------------------------------
   Protected Procedure this_access( pname As String )
 *---------------------------------------------
 
-    If Lower(m.pname) $  '__apush__,__otarget__,__lastproperty__,newitemfor,newlist,newcollection,additems,__acache__,__passitems__,__copycache__'
+    If Lower(m.pname)+',' $  '__apush__,__otarget__,__lastproperty__,newitemfor,newlist,newcollection,additems,__atemp__,__passitems__,__copytemp__,'
       Return This
     Endif
 
-    This.__copycache__()
+    This.__copytemp__()
 
     This.__lastproperty__ = m.pname
 
@@ -134,17 +132,18 @@ Define Class nfset As Custom
   For nn = 1 To Pcount()-1
 
     If m.isarray
-      This.__apush__( m.ot,m.pname, Evaluate('m.p'+Transform(m.nn)) )
+      This.__apush__( m.ot,m.pname, Evaluate('m.p'+Transform(m.nn,'@b 99')))
     Else
-      m.ot.&pname..Add( Evaluate('m.p'+Transform(m.nn)) )
+      m.ot.&pname..Add( Evaluate('m.p'+Transform(m.nn,'@b 99')) )
     Endif
 
   Endfor
 
 
 *---------------------------------------
-  Function newitemfor( pname , Key )
+function newItemFor( pname, key ) 
 *---------------------------------------
+
 
   Local ot,tvar,onew
 
@@ -186,51 +185,57 @@ Define Class nfset As Custom
   Endcase
 
 
-*-------------------------------------------------------------------------------------------------------
+*---------------------------------------------------------------------------------------------
   Procedure newlist( p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16,p17,p18,p19,p20 )
-*-------------------------------------------------------------------------------------------------------
+*---------------------------------------------------------------------------------------------
 
-  Local ot,lp,np
+  Local np
 
-  ot = This.__otarget__
-  lp = This.__lastproperty__
-  Removeproperty(m.ot,m.lp)
-  AddProperty(m.ot,m.lp+'(1)')
+  With This
 
-  If Pcount() > 0
-    Dimension This.__acache__( Pcount() )
-    For np = 1 To Pcount()
-      This.__acache__(m.np) =  Evaluate('m.p'+Transform(m.np,'@b 99'))
-    Endfor
-    This.__passitems__ = .T.
-  Else
-    Dimension This.__acache__(1)
-    This.__acache__(1) = .Null.
-    This.__passitems__ = .F.
-  Endif
+    Removeproperty(.__otarget__,.__lastproperty__)
+    AddProperty(.__otarget__,.__lastproperty__+'(1)')
+
+    If Pcount() > 0
+      Dimension .__atemp__( Pcount() )
+      For np = 1 To Pcount()
+        .__atemp__(m.np) =  Evaluate('m.p'+Transform(m.np,'@b 99'))
+      Endfor
+      .__passitems__ = .T.
+    Else
+      Dimension .__atemp__(1)
+      .__atemp__(1) = .Null.
+      .__passitems__ = .F.
+    Endif
+
+  Endwith
 
   Return .Null.
 
 *-------------------------------
   Procedure Destroy
 *-------------------------------
-  This.__copycache__()
+  This.__copytemp__()
 
 
 *----------------------------------------
-  Protected Procedure __copycache__
+  Protected Procedure __copytemp__
 *----------------------------------------
     Local aname
 
-    If !This.__passitems__
-      Return
-    Endif
+    With This
 
-    This.__passitems__ = .F.
+      If !.__passitems__
+        Return
+      Endif
 
-    aname = This.__lastproperty__
-    Acopy( This.__acache__,This.__otarget__.&aname )
-    This.__acache__ = .Null.
+      aname = .__lastproperty__
+      Acopy( .__atemp__,.__otarget__.&aname )
+
+      .__atemp__     = .Null.
+      .__passitems__ = .F.
+
+    Endwith
 
 *---------------------------------------------------------------------------------------------------
   Procedure newcollection(  p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16,p17,p18,p19,p20 )
@@ -268,4 +273,3 @@ Define Class nfset As Custom
 **********************************************
 Enddefine
 **********************************************
-

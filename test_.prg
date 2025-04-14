@@ -27,12 +27,13 @@ With _( m.omypc )
 		.formfactor = 'ATX'
 		.cpusocket = 'AM4'
 
+      * create a quick list ( one-column array ) with 4 items:
+      .power = .newList('CPU','CASE1','CASE2','CASE3')  
+
 		* create a collection, then add items to it:
 		.SPECS = .newCollection()
 
-
 		* add items to collection , with key "memory" and "usb":
-
 		with .newItemFor('specs','memory')
 			.type = 'DDR4'
 			.MAXSIZE = '64GB'
@@ -44,10 +45,6 @@ With _( m.omypc )
 			.front = 'x1 Type-C'
 			.rear  = 'x2 Type-A'
 		endwith
-
-      * create a quick list ( one-column array ) with 4 items:
-      .power = .newList('CPU','CASE1','CASE2','CASE3')  
-		
 
 	Endwith
 
