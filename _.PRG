@@ -1,10 +1,10 @@
 **************************************************************
-* underscore v 1.0.1
-* Marco Plaza, nfoxdev 2018,2025 
+* underscore v 1.0.2
+* Marco Plaza, nfoxdev 2018,2025
 * https://github.com/nfoxdev/underscore
 *************************************************************
 *
-* usage ( see test_.prg )
+* usage: 
 *
 *
 * with _( object , [ cNewPropertyName ] )
@@ -47,7 +47,7 @@ Try
   Do Case
 
   Case Vartype(__otarget__) # 'O'
-    Error 'nfTools: Invalid parameter type - must supply an object '+Chr(13)
+    Error ' Invalid parameter type - must supply an object '
 
   Case Pcount() = 2 And Vartype(m.newpropname ) = 'C'
 
@@ -74,7 +74,7 @@ Catch To oerror
 Endtry
 
 If Vartype(m.oerror) = 'O'
-  Error oerror.Message
+  Error oerror.Message 
 Endif
 
 
@@ -95,22 +95,20 @@ Define Class nfset As Custom
     This.__otarget__ = m.__otarget__
     AddProperty(This,'__atemp__(1)')
 
-*---------------------------------------------
+*------------------------------------------------------
   Protected Procedure this_access( pname As String )
-*---------------------------------------------
+*------------------------------------------------------
+
+    This.__copytemp__()
 
     If Lower(m.pname)+',' $  '__apush__,__otarget__,__lastproperty__,newitemfor,newlist,newcollection,additems,__atemp__,__passitems__,__copytemp__,'
       Return This
     Endif
 
-    This.__copytemp__()
-
     This.__lastproperty__ = m.pname
 
     If !Pemstatus(This.__otarget__,m.pname,5)
-
       AddProperty(This.__otarget__,m.pname, Createobject('empty') )
-
     Endif
 
     Return This.__otarget__
@@ -141,7 +139,7 @@ Define Class nfset As Custom
 
 
 *---------------------------------------
-function newItemFor( pname, key ) 
+  Function newitemfor( pname, Key )
 *---------------------------------------
 
 
@@ -273,3 +271,92 @@ function newItemFor( pname, key )
 **********************************************
 Enddefine
 **********************************************
+
+*-----------------------------------------
+Procedure testme
+*-----------------------------------------
+
+Public omypc && check later in your debugger
+
+omypc = Createobject('empty')
+
+* add properties to oMypc:
+
+With _( m.omypc )
+
+  .manufacturer = 'custom'
+  .baseprice = 699
+  .casetype  = 'ATX'
+  .modelname = 'Ryzen Performance Plus'
+
+  With _( .cpu )   && a cpu for oMyPc passing "dot cpu"
+    .processorcount = 6
+    .brand = 'AMD'
+    .model = 'Ryzen 7'
+    .clockspeed = 4.3
+    .processorcount = 8
+  Endwith
+
+  With _(.motherboard)
+
+    .manufacturer = 'Asus'
+    .model = 'Prime B350-Plus AMD'
+    .formfactor = 'ATX'
+    .cpusocket = 'AM4'
+
+* create a quick list ( one-column array ) with 4 items:
+    .Power = .newlist('CPU','CASE1','CASE2','CASE3')
+
+* create a collection, then add items to it:
+    .specs = .newcollection()
+
+* add items to collection , with key "memory" and "usb":
+    With .newitemfor('specs','memory')
+      .Type = 'DDR4'
+      .maxsize = '64GB'
+      .slots = 4
+    Endwith
+
+    With .newitemfor('specs','usb')
+      .internal = '3 @ PCIe 3.0 x2'
+      .front = 'x1 Type-C'
+      .rear  = 'x2 Type-A'
+    Endwith
+
+  Endwith
+
+* create an empty list , then add items to it:
+
+  .storage = .newlist()
+
+  With .newitemfor( 'storage' )  && adding objects to list
+    .manufacturer = 'Samsung'
+    .model = '960 evo Series'
+    .Type = 'internal'
+    .connectivity = 'PCIe NVMe M.2'
+    .capacity = '250gb'
+  Endwith
+
+  With .newitemfor( 'storage' )
+    .manufacturer = 'Seagate'
+    .model = 'Barracuda ST3000DM008'
+    .Type = 'Internal'
+    .formfactor = 3.5
+    .capacity = '3tb'
+    .connectivity = 'Sata 6.0'
+    .rotationspeed = 7200
+  Endwith
+
+
+Endwith
+
+Clear
+
+? 'oMypc.motherboard.power[1]: ',omypc.motherboard.Power[1]
+? 'oMypc.storage[1].model: ',omypc.storage[1].model
+? 'oMypc.storage[2].model: ',omypc.storage[2].model
+? 'oMypc.motherboard.specs("memory").slots: ',omypc.motherboard.specs('memory').slots
+? 'oMypc.motherboard.specs("usb").front: ',omypc.motherboard.specs('usb').front
+
+
+
